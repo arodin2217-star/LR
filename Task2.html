@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Напор воды</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #1a1a2e, #16213e); color: #fff; transition: background 0.5s ease; }
+        body.alert { background: linear-gradient(135deg, #4a0e0e, #1a0000); }
+
+        .header { display: flex; align-items: center; gap: 16px; margin-bottom: 30px; }
+
+        .drop {
+            width: 52px; height: 52px;
+            flex-shrink: 0;
+            transition: filter 0.5s ease;
+        }
+        .drop.alert { filter: drop-shadow(0 0 12px rgba(239, 68, 68, 0.7)); }
+        .drop path { transition: fill 0.5s ease; }
+
+        h1 { font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; }
+
+        .gauge-container { position: relative; width: 600px; max-width: 95vw; padding: 20px 30px 40px; background: rgba(255, 255, 255, 0.05); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); transition: border-color 0.5s ease, box-shadow 0.5s ease; }
+        .gauge-container.alert { border-color: rgba(255, 50, 50, 0.5); box-shadow: 0 0 30px rgba(255, 50, 50, 0.2); }
+
+        .value-display { text-align: center; font-size: 3rem; font-weight: 700; margin-bottom: 15px; font-variant-numeric: tabular-nums; transition: color 0.5s ease; }
+        .value-display.alert { color: #ff4444; }
+
+        .scale { position: relative; height: 6px; background: rgba(255, 255, 255, 0.15); border-radius: 3px; margin: 0 10px; }
+        .scale-fill { position: absolute; top: 0; left: 0; height: 100%; border-radius: 3px; background: linear-gradient(90deg, #4ade80, #22d3ee); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s ease; width: 0%; }
+        .scale-fill.alert { background: linear-gradient(90deg, #f59e0b, #ef4444); }
+
+        .ticks { position: relative; display: flex; justify-content: space-between; padding: 8px 0 0; margin: 0 10px; }
+        .tick { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s ease; }
+        .tick:hover { transform: scale(1.2); }
+        .tick-mark { width: 2px; height: 14px; background: rgba(255, 255, 255, 0.4); border-radius: 1px; transition: background 0.3s ease; }
+        .tick.active .tick-mark { background: #4ade80; }
+        .tick.alert .tick-mark { background: #ef4444; }
+        .tick-label { margin-top: 6px; font-size: 0.85rem; color: rgba(255, 255, 255, 0.5); transition: color 0.3s ease; }
+        .tick.active .tick-label { color: #4ade80; font-weight: 700; }
+        .tick.alert .tick-label { color: #ef4444; font-weight: 700; }
+
+        .needle-container { position: absolute; top: -8px; left: 0; width: 100%; pointer-events: none; transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1); left: 0%; }
+        .needle { display: flex; flex-direction: column; align-items: center; margin: 0 auto; transform: translateX(-50%); }
+        .needle-tip { width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 14px solid #4ade80; filter: drop-shadow(0 0 6px rgba(74, 222, 128, 0.5)); transition: border-color 0.5s ease, filter 0.5s ease; }
+        .needle-tip.alert { border-top-color: #ef4444; filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.5)); }
+        .needle-stem { width: 3px; height: 8px; background: #4ade80; transition: background 0.5s ease; }
+        .needle-stem.alert { background: #ef4444; }
+
+        .keyboard { display: flex; gap: 8px; margin-top: 30px; flex-wrap: wrap; justify-content: center; }
+        .key { width: 56px; height: 56px; border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 12px; background: rgba(255, 255, 255, 0.05); color: #fff; font-size: 1.4rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; user-select: none; }
+        .key:hover { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.4); transform: translateY(-2px); }
+        .key:active { transform: translateY(1px) scale(0.95); }
+        .key.active { background: #4ade80; color: #1a1a2e; border-color: #4ade80; }
+        .key.active.alert { background: #ef4444; border-color: #ef4444; }
+
+        .range-wrapper { margin-top: 25px; width: 100%; max-width: 540px; }
+        .range-wrapper label { display: block; text-align: center; margin-bottom: 10px; font-size: 0.9rem; opacity: 0.7; }
+        input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; border-radius: 4px; background: rgba(255, 255, 255, 0.15); outline: none; transition: background 0.5s ease; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 24px; height: 24px; border-radius: 50%; background: #4ade80; cursor: pointer; box-shadow: 0 0 10px rgba(74, 222, 128, 0.4); transition: background 0.5s ease; }
+        input[type="range"]::-webkit-slider-thumb.alert { background: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
+        input[type="range"]::-moz-range-thumb { width: 24px; height: 24px; border-radius: 50%; background: #4ade80; cursor: pointer; border: none; box-shadow: 0 0 10px rgba(74, 222, 128, 0.4); transition: background 0.5s ease; }
+        input[type="range"]::-moz-range-thumb.alert { background: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
+
+        @media (max-width: 640px) {
+            .key { width: 44px; height: 44px; font-size: 1.1rem; }
+            .value-display { font-size: 2.2rem; }
+            .tick-label { font-size: 0.7rem; }
+            h1 { font-size: 1.2rem; }
+            .drop { width: 40px; height: 40px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <svg class="drop" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <path d="M32 4 C32 4 8 36 8 44 C8 57.3 18.7 64 32 64 C45.3 64 56 57.3 56 44 C56 36 32 4 32 4Z"
+                  fill="#22d3ee" opacity="0.9"/>
+            <ellipse cx="24" cy="42" rx="6" ry="8" fill="rgba(255,255,255,0.25)" transform="rotate(-15 24 42)"/>
+        </svg>
+        <h1>Напор воды</h1>
+    </div>
+
+    <div class="gauge-container" id="gaugeContainer">
+        <div class="value-display" id="valueDisplay">0</div>
+        <div class="scale">
+            <div class="scale-fill" id="scaleFill"></div>
+        </div>
+        <div class="needle-container" id="needleContainer">
+            <div class="needle">
+                <div class="needle-tip" id="needleTip"></div>
+                <div class="needle-stem" id="needleStem"></div>
+            </div>
+        </div>
+        <div class="ticks" id="ticksContainer"></div>
+    </div>
+
+    <div class="keyboard" id="keyboard"></div>
+
+    <div class="range-wrapper">
+        <label>Ползунок (или клавиши 0–9 / стрелки)</label>
+        <input type="range" id="rangeInput" min="0" max="9" value="0" step="1">
+    </div>
+
+    <script>
+        const MAX = 9;
+        let currentValue = 0;
+        const gaugeContainer = document.getElementById('gaugeContainer');
+        const valueDisplay   = document.getElementById('valueDisplay');
+        const scaleFill      = document.getElementById('scaleFill');
+        const needleContainer= document.getElementById('needleContainer');
+        const needleTip      = document.getElementById('needleTip');
+        const needleStem     = document.getElementById('needleStem');
+        const ticksContainer = document.getElementById('ticksContainer');
+        const keyboard       = document.getElementById('keyboard');
+        const rangeInput     = document.getElementById('rangeInput');
+        const dropSvg        = document.querySelector('.drop');
+
+        for (let i = 0; i <= MAX; i++) {
+            const tick = document.createElement('div');
+            tick.className = 'tick';
+            tick.dataset.value = i;
+            tick.innerHTML = `<div class="tick-mark"></div><span class="tick-label">${i}</span>`;
+            tick.addEventListener('click', () => setValue(i));
+            ticksContainer.appendChild(tick);
+        }
+
+        for (let i = 0; i <= MAX; i++) {
+            const key = document.createElement('button');
+            key.className = 'key';
+            key.textContent = i;
+            key.dataset.value = i;
+            key.addEventListener('click', () => setValue(i));
+            keyboard.appendChild(key);
+        }
+
+        rangeInput.addEventListener('input', () => {
+            setValue(Number(rangeInput.value));
+        });
+
+        function setValue(val) {
+            currentValue = val;
+            rangeInput.value = val;
+            const isAlert = val > 5;
+            const alertClass = 'alert';
+
+            valueDisplay.textContent = val;
+            valueDisplay.classList.toggle(alertClass, isAlert);
+            gaugeContainer.classList.toggle(alertClass, isAlert);
+            document.body.classList.toggle(alertClass, isAlert);
+            dropSvg.classList.toggle(alertClass, isAlert);
+
+            const pct = (val / MAX) * 100;
+            scaleFill.style.width = pct + '%';
+            scaleFill.classList.toggle(alertClass, isAlert);
+            needleContainer.style.left = pct + '%';
+            needleTip.classList.toggle(alertClass, isAlert);
+            needleStem.classList.toggle(alertClass, isAlert);
+
+            document.querySelectorAll('.tick').forEach(t => {
+                const tv = Number(t.dataset.value);
+                t.classList.toggle('active', tv <= val);
+                t.classList.toggle(alertClass, tv <= val && isAlert);
+            });
+
+            document.querySelectorAll('.key').forEach(k => {
+                const kv = Number(k.dataset.value);
+                k.classList.toggle('active', kv === val);
+                k.classList.toggle(alertClass, kv === val && isAlert);
+            });
+
+            rangeInput.classList.toggle(alertClass, isAlert);
+        }
+
+        setValue(0);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '9') {
+                setValue(Number(e.key));
+            } else if (e.key === 'ArrowRight' && currentValue < MAX) {
+                setValue(currentValue + 1);
+            } else if (e.key === 'ArrowLeft' && currentValue > 0) {
+                setValue(currentValue - 1);
+            }
+        });
+    </script>
+</body>
+</html>

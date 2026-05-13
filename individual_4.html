@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Моё Резюме</title>
+    <style>
+       
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            color: #2c3e50; 
+            margin: 0;
+            padding: 40px 20px;
+            transition: background-color 0.4s ease;
+        }
+
+        .resume-card {
+            max-width: 850px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 35px;
+            border: 3px solid #3498db; 
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15); 
+        }
+
+        h1 {
+            font-size: 32px; 
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1); 
+        }
+        h2 {
+            font-size: 22px;
+            color: #2980b9;
+            border-bottom: 2px solid #bdc3c7;
+            padding-bottom: 8px;
+            margin-top: 25px;
+        }
+        p, li {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+       
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+        .photo {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            border: 4px solid #3498db;
+            object-fit: cover;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .name-block {
+            font-size: 26px;
+            font-weight: bold;
+        }
+        .surname {
+            color: #e74c3c;
+            transition: color 0.3s;
+        }
+
+        .controls {
+            margin-top: 30px;
+            padding: 20px;
+            background: #ecf0f1;
+            border: 2px dashed #7f8c8d;
+            border-radius: 10px;
+        }
+        input {
+            padding: 10px;
+            font-size: 15px;
+            border: 2px solid #95a5a6;
+            border-radius: 6px;
+            width: 220px;
+            outline: none;
+        }
+        input:focus {
+            border-color: #3498db;
+        }
+        button {
+            padding: 10px 18px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            border: 2px solid transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: all 0.25s ease;
+        }
+        #changeBtn {
+            background-color: #27ae60;
+            border-color: #1e8449;
+        }
+        #colorBtn {
+            background-color: #8e44ad;
+            border-color: #6c3483;
+        }
+        /* изменения цвета при наведении */
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            background-color: #1e8449;
+        }
+        #colorBtn:hover {
+            background-color: #6c3483;
+        }
+        button:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="resume-card">
+        <div class="header">
+            <img src="photo_ava.jpg" alt="Фото профиля" class="photo">
+            <div class="name-block">
+                <div>Имя: Алексей</div>
+                <div>Фамилия: <span id="surname-display">Родин</span></div>
+                <div style="font-size: 16px; font-weight: normal; color: #555; margin-top: 5px;">Грустный Джун</div>
+            </div>
+        </div>
+
+        <section>
+            <h2>Обо мне</h2>
+            <p>Являюсь студентом 3 курса МГТУ «СТАНКИН» по направлению «Автоматизация технологических процессов и производств». Имею практический опыт в области промышленной автоматизации: успешно прошёл предстажировку по АСУТП в АО«Гринатом». Интересуюсь разработкой и внедрением АСУТП, ПЛК, SCADA-системами на промышленных объектах. Быстро осваиваю новые технологии, ответственно подхожу к задачам. Обладаю базовыми знаниями промышленных ПЛК и электротехники, работы с технической документацией, схемами и инженерным ПО (T-FLEX CAD, Multisim). В учебных проектах разрабатывал программы на C++ и Python для задач автоматизации, включая оптимизацию планирования производства</p>
+        </section>
+
+        <section>
+            <h2>Навыки</h2>
+            <ul>
+                <li>Семантическая вёрстка на HTML5 и основы веб-доступности (a11y)</li>
+                <li>CSS3: Flexbox, Grid, медиавыражения, CSS-переменные и плавные анимации</li>
+                <li>JavaScript (ES6+): манипуляции с DOM, обработка событий, асинхронность, Fetch API</li>
+                <li>Адаптивная и кроссбраузерная вёрстка (подход Mobile First)</li>
+                <li>Отладка кода в Chrome DevTools и работа с консолью</li>
+                <li>Git: ветвление, коммиты, pull request, базовое разрешение конфликтов</li>
+                <li>Развёртывание проектов через GitHub Pages и понимание основ CI/CD</li>
+                <li>Промпт-инжиниринг: составление структурированных запросов для генерации и оптимизации кода с помощью ИИ</li>
+                <li>Основы работы с REST API и обменом данных в формате JSON</li>
+                <li>Чтение технической документации, самостоятельный поиск решений и problem-solving</li>
+                <li>Базовое понимание Agile/Scrum, работа с таск-трекерами и культура код-ревью</li>
+            </ul>
+        </section>
+
+        <div class="controls">
+            <h2>🛠 Интерактивная панель</h2>
+            <label for="new-surname">Введите новую фамилию:</label><br><br>
+            <input type="text" id="new-surname" placeholder="Например: Сидоров">
+            <button id="changeBtn">Изменить фамилию</button>
+            <button id="colorBtn">🎨 Случайный цвет фона</button>
+        </div>
+    </div>
+
+    <script>
+        const surnameSpan = document.getElementById('surname-display');
+        const inputField = document.getElementById('new-surname');
+        const changeBtn = document.getElementById('changeBtn');
+        const colorBtn = document.getElementById('colorBtn');
+
+        changeBtn.addEventListener('click', () => {
+            const newName = inputField.value.trim();
+            if (newName.length > 0) {
+                surnameSpan.textContent = newName;
+                inputField.value = ''; 
+                surnameSpan.style.color = '#e74c3c'; 
+            } else {
+                alert('Пожалуйста, введите фамилию в поле!');
+            }
+        });
+
+        // 2. Смена цвета фона на случайный
+        colorBtn.addEventListener('click', () => {
+            const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+            document.body.style.backgroundColor = randomColor;
+        });
+
+        surnameSpan.addEventListener('mouseover', () => surnameSpan.style.color = '#f39c12');
+        surnameSpan.addEventListener('mouseout', () => surnameSpan.style.color = '#e74c3c');
+    </script>
+</body>
+</html>

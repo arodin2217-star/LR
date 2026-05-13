@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .calculator {
+            background: #1e293b;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+                        0 0 40px rgba(99, 102, 241, 0.1);
+            width: 380px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #e2e8f0;
+            margin-bottom: 25px;
+            font-size: 1.5em;
+            letter-spacing: 2px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #94a3b8;
+            font-size: 0.85em;
+            margin-bottom: 6px;
+            padding-left: 5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #334155;
+            border-radius: 12px;
+            background: #0f172a;
+            color: #f1f5f9;
+            font-size: 1.2em;
+            text-align: right;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #6366f1;
+        }
+
+        .operations {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .operations button {
+            flex: 1;
+            padding: 14px;
+            border: 2px solid #334155;
+            border-radius: 12px;
+            background: #0f172a;
+            color: #e2e8f0;
+            font-size: 1.3em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .operations button:hover {
+            background: #334155;
+        }
+
+        .operations button.active {
+            background: #6366f1;
+            border-color: #6366f1;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .answer-group {
+            margin-bottom: 20px;
+        }
+
+        .answer-group label {
+            display: block;
+            color: #94a3b8;
+            font-size: 0.85em;
+            margin-bottom: 6px;
+            padding-left: 5px;
+        }
+
+        .answer-group input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #334155;
+            border-radius: 12px;
+            background: #0f172a;
+            color: #f1f5f9;
+            font-size: 1.3em;
+            text-align: right;
+            outline: none;
+            transition: all 0.4s;
+            font-weight: bold;
+        }
+
+        .answer-group input.over-limit {
+            background: #dc2626;
+            border-color: #ef4444;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.4);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(220, 38, 38, 0.4); }
+            50%      { box-shadow: 0 0 30px rgba(220, 38, 38, 0.7); }
+        }
+
+        .btn-calculate {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: transform 0.15s, box-shadow 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-calculate:active {
+            transform: translateY(0);
+        }
+
+        .keyboard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .keyboard button {
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            background: #334155;
+            color: #f1f5f9;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .keyboard button:hover {
+            background: #475569;
+            transform: translateY(-2px);
+        }
+
+        .keyboard button:active {
+            transform: translateY(0);
+            background: #6366f1;
+        }
+
+        .keyboard .btn-clear {
+            background: #dc2626;
+            grid-column: span 3;
+        }
+
+        .keyboard .btn-clear:hover {
+            background: #ef4444;
+        }
+
+        .separator {
+            height: 1px;
+            background: #334155;
+            margin: 20px 0;
+        }
+
+        .section-title {
+            color: #94a3b8;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="calculator">
+    <h1>🧮 Калькулятор</h1>
+
+    <div class="input-group">
+        <label>Число 1</label>
+        <input type="text" id="num1" readonly value="0">
+    </div>
+
+    <div class="input-group">
+        <label>Число 2</label>
+        <input type="text" id="num2" readonly value="0">
+    </div>
+
+    <div class="operations">
+        <button data-op="+" onclick="setOp(this)">+</button>
+        <button data-op="-" onclick="setOp(this)">−</button>
+        <button data-op="*" onclick="setOp(this)">*</button>
+        <button data-op="/" onclick="setOp(this)">/</button>
+    </div>
+
+    <div class="answer-group">
+        <label>Ответ</label>
+        <input type="text" id="answer" readonly value="">
+    </div>
+
+    <button class="btn-calculate" onclick="calculate()">Посчитать</button>
+
+    <div class="separator"></div>
+    <div class="section-title">Цифровая клавиатура</div>
+
+    <div class="keyboard">
+        <button onclick="pressKey('1')">1</button>
+        <button onclick="pressKey('2')">2</button>
+        <button onclick="pressKey('3')">3</button>
+        <button onclick="pressKey('4')">4</button>
+        <button onclick="pressKey('5')">5</button>
+        <button onclick="pressKey('6')">6</button>
+        <button onclick="pressKey('7')">7</button>
+        <button onclick="pressKey('8')">8</button>
+        <button onclick="pressKey('9')">9</button>
+        <button onclick="pressKey('0')">0</button>
+        <button onclick="pressKey('.')">.</button>
+        <button onclick="pressKey('-')">±</button>
+        <button class="btn-clear" onclick="clearAll()">Очистить</button>
+    </div>
+</div>
+
+<script>
+    let currentField = 'num1';
+    let selectedOp = '+';
+
+    document.getElementById('num1').addEventListener('click', () => currentField = 'num1');
+    document.getElementById('num2').addEventListener('click', () => currentField = 'num2');
+
+    function setOp(btn) {
+        document.querySelectorAll('.operations button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedOp = btn.getAttribute('data-op');
+    }
+
+    document.querySelector('.operations button[data-op="+"]').classList.add('active');
+
+    function pressKey(key) {
+        const input = document.getElementById(currentField);
+        let val = input.value;
+
+        if (key === '.') {
+            if (val.includes('.')) return;
+            if (val === '' || val === '0') val = '0';
+            val += '.';
+        } else if (key === '-') {
+            if (val.startsWith('-')) {
+                val = val.substring(1);
+            } else if (val !== '0') {
+                val = '-' + val;
+            }
+        } else {
+            if (val === '0') {
+                val = key;
+            } else {
+                val += key;
+            }
+        }
+
+        input.value = val;
+    }
+
+    function clearAll() {
+        document.getElementById('num1').value = '0';
+        document.getElementById('num2').value = '0';
+        document.getElementById('answer').value = '';
+        const answerInput = document.getElementById('answer');
+        answerInput.classList.remove('over-limit');
+        currentField = 'num1';
+    }
+
+    function calculate() {
+        const a = parseFloat(document.getElementById('num1').value);
+        const b = parseFloat(document.getElementById('num2').value);
+        const answerInput = document.getElementById('answer');
+
+        if (isNaN(a) || isNaN(b)) {
+            answerInput.value = 'Ошибка';
+            answerInput.classList.remove('over-limit');
+            return;
+        }
+
+        let result;
+        switch (selectedOp) {
+            case '+': result = a + b; break;
+            case '-': result = a - b; break;
+            case '*': result = a * b; break;
+            case '/':
+                if (b === 0) {
+                    answerInput.value = 'Деление на 0!';
+                    answerInput.classList.remove('over-limit');
+                    return;
+                }
+                result = a / b;
+                break;
+        }
+
+        result = Math.round(result * 1e10) / 1e10;
+
+        if (result > 15) {
+            answerInput.value = result;
+            answerInput.classList.add('over-limit');
+        } else {
+            answerInput.value = result;
+            answerInput.classList.remove('over-limit');
+        }
+    }
+</script>
+
+</body>
+</html>

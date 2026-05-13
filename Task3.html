@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Конструктор титульника</title>
+    <style>
+        :root {
+            --primary: #0056b3;
+            --primary-hover: #004494;
+            --bg-page: #f4f4f9;
+            --bg-card: #fff;
+            --text-main: #333;
+            --text-muted: #555;
+            --border: #ccc;
+        }
+        * { box-sizing: border-box; }
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: var(--bg-page);
+        }
+        .wrapper {
+            min-height: 100%;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+        }
+        .card {
+            background: var(--bg-card);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+            padding: 30px;
+        }
+        .card__title {
+            text-align: center;
+            color: var(--text-main);
+            margin: 0 0 20px;
+            font-size: 1.4rem;
+        }
+        .field { margin-bottom: 15px; }
+        .field__label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+        .field__input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        .field__input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 8px;
+        }
+        .btn:hover { background: var(--primary-hover); }
+        .btn:active { transform: translateY(1px); }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <form class="card" id="titleForm">
+            <h1 class="card__title">Параметры отчёта</h1>
+            
+            <div class="field">
+                <label class="field__label" for="inpDept">Кафедра</label>
+                <input class="field__input" type="text" id="inpDept" required placeholder="КСУ">
+            </div>
+
+            <div class="field">
+                <label class="field__label" for="inpSubj">Дисциплина</label>
+                <input class="field__input" type="text" id="inpSubj" required placeholder="Программирование">
+            </div>
+
+            <div class="field">
+                <label class="field__label" for="inpGrp">Группа</label>
+                <input class="field__input" type="text" id="inpGrp" required placeholder="АДБ-21-06">
+            </div>
+
+            <div class="field">
+                <label class="field__label" for="inpStud">Студент</label>
+                <input class="field__input" type="text" id="inpStud" required placeholder="Иванов И.И.">
+            </div>
+
+            <div class="field">
+                <label class="field__label" for="inpTchr">Преподаватель</label>
+                <input class="field__input" type="text" id="inpTchr" required placeholder="Петров П.П.">
+            </div>
+
+            <button type="submit" class="btn">Сформировать документ</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('titleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const data = {
+                dept: document.getElementById('inpDept').value.trim(),
+                subj: document.getElementById('inpSubj').value.trim(),
+                grp: document.getElementById('inpGrp').value.trim(),
+                stud: document.getElementById('inpStud').value.trim(),
+                tchr: document.getElementById('inpTchr').value.trim(),
+                year: new Date().getFullYear()
+            };
+
+            // Валидация: проверяем, что все поля заполнены
+            if (Object.values(data).some(v => !v && typeof v === 'string')) {
+                alert('Пожалуйста, заполните все поля');
+                return;
+            }
+
+            const markup = buildCoverPage(data);
+            
+            // Пытаемся открыть новое окно
+            const preview = window.open('', '_blank');
+            
+            if (!preview || preview.closed || typeof preview.closed === 'undefined') {
+                alert('⚠️ Браузер заблокировал всплывающее окно.\nРазрешите попапы для этого сайта или используйте кнопку генерации повторно.');
+                return;
+            }
+            
+            try {
+                preview.document.write(markup);
+                preview.document.close();
+                preview.focus();
+            } catch (err) {
+                console.error('Ошибка при генерации:', err);
+                alert('Произошла ошибка при создании документа. Проверьте консоль разработчика (F12).');
+            }
+        });
+
+        function buildCoverPage(d) {
+            return `<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Титульный лист</title>
+<style>
+    @page { margin: 1cm 1.5cm 2cm 3cm; }
+    html, body {
+        margin: 1cm 1.5cm 2cm 3cm;
+        font: 14pt "Times New Roman", Times, serif;
+        line-height: 1.5;
+        color: #000;
+        background: #fff;
+    }
+    .center { text-align: center; }
+    .uppercase { text-transform: uppercase; }
+    .bold { font-weight: 700; }
+    .mt-20 { margin-top: 20px; }
+    .mt-40 { margin-top: 40px; }
+    .mt-60 { margin-top: 60px; }
+    .mb-40 { margin-bottom: 40px; }
+    .mb-60 { margin-bottom: 60px; }
+    .mt-100 { margin-top: 100px; }
+    
+    .header-block {
+        margin-bottom: 40px;
+        font-size: 12pt;
+    }
+    .work-title {
+        margin: 60px 0;
+        text-align: center;
+    }
+    .work-title h2 {
+        font-size: 16pt;
+        margin: 0 0 10px;
+    }
+    .signatures {
+        width: 45%;
+        margin-left: 55%;
+        text-align: left;
+    }
+    .signatures p { margin: 8px 0; }
+    .signature-line {
+        display: inline-block;
+        width: 120px;
+        border-bottom: 1px solid #000;
+        margin: 0 5px;
+    }
+    .year-block {
+        text-align: center;
+        margin-top: 100px;
+    }
+    .logo-placeholder {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #666;
+        font-style: italic;
+        font-size: 10pt;
+    }
+    @media print {
+        body { margin: 1cm 1.5cm 2cm 3cm; }
+        .no-print { display: none; }
+    }
+</style>
+</head>
+<body>
+    <div class="logo-container" style="text-align: center; margin-bottom: 20px;">
+    <img src="logo.png" alt="Логотип" style="max-width: 200px; height: auto;">
+</div>
+    
+    <div class="header-block center uppercase">
+        <span class="bold">МИНОБРНАУКИ РОССИИ</span><br>
+        <span class="bold">Федеральное государственное автономное образовательное учреждение</span><br>
+        <span class="bold">высшего образования</span><br>
+        <span class="bold">«Московский государственный технологический университет</span><br>
+        <span class="bold">«СТАНКИН»</span><br>
+        <span class="bold">(ФГАОУ ВО «МГТУ «СТАНКИН»)</span><br>
+        <br>
+        Институт цифровых интеллектуальных систем<br>
+        Кафедра ${escapeHtml(d.dept)}<br>
+        <br><br><br>
+        Образовательная программа 15.03.04<br>
+        «Автоматизация технологических процессов и производств»<br>
+        <br>
+        Дисциплина<br>
+        «${escapeHtml(d.subj)}»
+    </div>
+
+    <div class="work-title">
+        <h2>ОТЧЕТ</h2>
+        <p>по лабораторной работе № ___</p>
+    </div>
+
+    <div class="signatures">
+        <p><span class="bold">Выполнил:</span> студент группы ${escapeHtml(d.grp)}</p>
+        <p>${escapeHtml(d.stud)} <span class="signature-line"></span></p>
+        <br>
+        <p><span class="bold">Проверил:</span> к.т.н., доцент</p>
+        <p>${escapeHtml(d.tchr)} <span class="signature-line"></span></p>
+    </div>
+
+    <div class="year-block">
+        Москва, ${d.year}
+    </div>
+    
+    <div class="no-print center" style="margin-top: 30px; font-size: 10pt; color: #666;">
+        <button onclick="window.print()" style="padding: 6px 12px; cursor: pointer;">🖨 Печать / Сохранить в PDF</button>
+    </div>
+</body>
+</html>`;
+        }
+        
+        // Простая экранировка для защиты от XSS и поломки вёрстки
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
